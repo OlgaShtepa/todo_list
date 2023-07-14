@@ -1,0 +1,29 @@
+# pull official base image
+FROM python:3.9.6-slim-buster
+
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# set work directory
+WORKDIR /usr/src/app
+
+# install system dependencies
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y \
+        postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# install dependencies
+COPY ./requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# copy entrypoint.prod.sh
+COPY ./entrypoint.prod.sh .
+RUN chmod +x /usr/src/app/entrypoint.prod.sh
+
+# copy project
+COPY . .
+
+# run the entrypoint script
+CMD ["./entrypoint.prod.sh"]
