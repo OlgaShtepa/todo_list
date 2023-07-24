@@ -10,7 +10,7 @@ WORKDIR /usr/src/app
 
 # install system dependencies
 RUN apk update \
-    && apk add --no-cache postgresql-dev gcc python3-dev musl-dev \
+    && apk add --no-cache postgresql-dev gcc python3-dev musl-dev postgresql-client \
     && rm -rf /var/cache/apk/*
 
 

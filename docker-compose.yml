@@ -11,21 +11,29 @@ services:
       - .:/usr/src/app
     env_file:
       - .env
-    command: python manage.py runserver 0.0.0.0:8000
+    #command: python manage.py runserver 0.0.0.0:8000
+    command: sh -c "apt-get update && apt-get install -y netcat && celery -A todo_list worker --loglevel=info & python manage.py runserver 0.0.0.0:8000"
     depends_on:
       - db
+
   db:
-    image: postgres
+    image: postgres:latest
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+
+
     environment:
         - DB_ENGINE=${DB_ENGINE}
         - DB_NAME=${DB_NAME}
         - DB_USER=${DB_USER}
         - DB_PASSWORD=${DB_PASSWORD}
         - DB_PORT=${DB_PORT}
+
     ports:
       - '5432:5432'
+
+    command: |
+      sh -c "while ! nc -z db 5432; do sleep 1; done && echo 'Database started!'"
 
 volumes:
   postgres_data:
